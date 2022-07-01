@@ -1,67 +1,72 @@
-const Header = ({ course }) => {
-  return (
-    <>
-      <h1>{course.name}</h1>
-    </>
-  )
-}
+import { useState } from "react";
 
-const Part = ({ part, exercise }) => {
+const Button = ({ handleClick, text }) => {
   return (
-    <>
-      <p>
-        {part} {exercise}
-      </p>
-    </>
-  )
-}
-
-const Content = ({ course }) => {
-  let parts = course["parts"]
-  const [part1, part2, part3] = parts
-
-  return (
-    <>
-      <Part part={part1.name} exercise={part1.exercises} />
-      <Part part={part2.name} exercise={part2.exercises} />
-      <Part part={part3.name} exercise={part3.exercises} />
-    </>
-  )
-}
-
-const Total = ({ course }) => {
-  let total = course.parts[0].exercises + course.parts[1].exercises + course.parts[2].exercises
-  return (
-    <>
-      <p>Number of exercises {total}</p>
-    </>
+    <button onClick={handleClick}>
+      {text}
+    </button>
   )
 }
 
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+
+  const handleGoodClick = () => {
+    setGood(good + 1);
   }
+
+  const handleNeutralClick = () => {
+    setNeutral(neutral + 1);
+  }
+
+  const handleBadClick = () => {
+    setBad(bad + 1);
+  }
+
+  const all = good + neutral + bad;
+  const average = (good - bad) / all;
+  const positive = good / all * 100;
+
   return (
-    <div>
-      <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
-    </div>
+    <>
+      <h1>Give feedback</h1>
+      <div>
+        <Button handleClick={handleGoodClick} text="good" />
+        <Button handleClick={handleNeutralClick} text="neutral" />
+        <Button handleClick={handleBadClick} text="bad" />
+      </div>
+      <h1>Statistics</h1>
+      <table>
+        <tbody>
+          <tr>
+            <td>good</td>
+            <td>{good}</td>
+          </tr>
+          <tr>
+            <td>neutral</td>
+            <td>{neutral}</td>
+          </tr>
+          <tr>
+            <td>bad</td>
+            <td>{bad}</td>
+          </tr>
+          <tr>
+            <td>all</td>
+            <td>{all}</td>
+          </tr>
+          <tr>
+            <td>average</td>
+            <td>{average}</td>
+          </tr>
+          <tr>
+            <td>positive</td>
+            <td>{positive} %</td>
+          </tr>
+        </tbody>
+      </table>
+    </>
   )
 }
 

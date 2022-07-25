@@ -1,62 +1,73 @@
-import Course from "./components/Course";
+import Filter from "./components/Filter"
+import PersonForm from "./components/PersonForm"
+import Persons from "./components/Persons"
+import { useState } from "react"
+
+const checkIfEmpty = (...args) => args.map(a => a.length === 0).includes(true)
 
 const App = () => {
-  const courses = [
-    {
-      name: 'Half Stack application development',
-      id: 1,
-      parts: [
-        {
-          name: 'Fundamentals of React',
-          exercises: 10,
-          id: 1
-        },
-        {
-          name: 'Using props to pass data',
-          exercises: 7,
-          id: 2
-        },
-        {
-          name: 'State of a component',
-          exercises: 14,
-          id: 3
-        },
-        {
-          name: 'Redux',
-          exercises: 11,
-          id: 4
-        }
-      ]
-    },
-    {
-      name: 'Node.js',
-      id: 2,
-      parts: [
-        {
-          name: 'Routing',
-          exercises: 3,
-          id: 1
-        },
-        {
-          name: 'Middlewares',
-          exercises: 7,
-          id: 2
-        }
-      ]
+  const [persons, setPersons] = useState([])
+  const [filter, setFiltered] = useState([])
+  const [info, setInfo] = useState({
+    name: "",
+    number: "",
+  })
+
+  const filterPersons = (e) => {
+    const text = e.target.value
+    const copy = [...persons]
+    const filtered = text ? copy.filter(person => person.name.toLowerCase().includes(text.toLowerCase())) : copy
+    setFiltered(filtered)
+  }
+
+  const addPerson = (event) => {
+    event.preventDefault()
+
+    const newPerson = {
+      name: info.name,
+      number: info.number,
+      id: persons.length + 1
     }
-  ]
+
+    const exists = persons.find(person => person.name.toLowerCase() === info.name.toLowerCase())
+
+    if (exists) {
+      alert(`${info.name} is already added to phonebook`)
+    } else if (checkIfEmpty(info.name, info.number)) {
+      alert("Name and number must be filled")
+    } else {
+      setPersons(persons.concat(newPerson))
+      setFiltered (persons.concat(newPerson))
+      setInfo({
+        name: "",
+        number: "",
+        id: null
+      })
+    }
+  }
+
+  const handleNameChange = (event) => {
+    setInfo({ ...info, name: event.target.value })
+  }
+
+  const handleNumberChange = (event) => {
+    setInfo({ ...info, number: event.target.value })
+  }
 
   return (
-    <>
-      <h1>Web development curriculum</h1>
-      <div>
-        {courses.map(course => 
-        <>
-          <Course key={course.id} course={course} />
-        </>
-        )}
-      </div>
-    </>
+    <div>
+      <h2>Phonebook</h2>
+      <Filter filterPersons={filterPersons} />
+      <h2>Add a new</h2>
+      <PersonForm
+        info={info}
+        onChangeName={handleNameChange}
+        onChangeNumber={handleNumberChange}
+        onSubmit={addPerson}
+      />
+      <h2>Numbers</h2>
+      <Persons persons={filter} />
+    </div>
   )
 }
 
